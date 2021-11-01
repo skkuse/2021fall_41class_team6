@@ -283,7 +283,7 @@ MonoBehaviour:
       Data: 
     - Name: $k
       Entry: 1
-      Data: gameBoard
+      Data: children
     - Name: $v
       Entry: 7
       Data: 15|UdonSharp.Compiler.FieldDefinition, UdonSharp.Editor
@@ -295,7 +295,7 @@ MonoBehaviour:
       Data: 17|System.RuntimeType, mscorlib
     - Name: 
       Entry: 1
-      Data: UnityEngine.GameObject, UnityEngine.CoreModule
+      Data: UnityEngine.GameObject[], UnityEngine.CoreModule
     - Name: 
       Entry: 8
       Data: 
@@ -307,13 +307,13 @@ MonoBehaviour:
       Data: 0
     - Name: symbolResolvedTypeName
       Entry: 1
-      Data: UnityEngineGameObject
+      Data: UnityEngineGameObjectArray
     - Name: symbolOriginalName
       Entry: 1
-      Data: gameBoard
+      Data: children
     - Name: symbolUniqueName
       Entry: 1
-      Data: gameBoard
+      Data: children
     - Name: symbolDefaultValue
       Entry: 6
       Data: 

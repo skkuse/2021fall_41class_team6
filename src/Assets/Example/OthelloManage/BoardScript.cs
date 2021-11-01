@@ -15,7 +15,7 @@ public class BoardScript : UdonSharpBehaviour
 
 
     // 0: no stone, 1: black, 2: white
-    int[,] gameStatus = new int[4,4];
+    // int[,] gameStatus = new int[4,4];
     GameObject[] children;
 
 
@@ -24,57 +24,57 @@ public class BoardScript : UdonSharpBehaviour
         children = gameObject.GetComponentsInChildren<GameObject>();
     }
 
-    void initializeGame()
-    {
-        for(int i=0; i<4; i++)
-            for(int j=0; j<4; j++)
-                gameStatus[i,j] = 0;
+    // void initializeGame()
+    // {
+    //     for(int i=0; i<4; i++)
+    //         for(int j=0; j<4; j++)
+    //             gameStatus[i,j] = 0;
 
         
-        whiteStartFlag = false;
-        blackStartFlag = false;
-        gameFlag = false;
-        winnerFlag = false;
-    }
+    //     whiteStartFlag = false;
+    //     blackStartFlag = false;
+    //     gameFlag = false;
+    //     winnerFlag = false;
+    // }
 
-    int[] availableSpots(bool playerFlag) // 0: black, 1: white
-    {
-        int[] retval = new int[17];
-        retval[0] = 0; // available spots count
+    // int[] availableSpots(bool playerFlag) // 0: black, 1: white
+    // {
+    //     int[] retval = new int[17];
+    //     retval[0] = 0; // available spots count
 
-        for(int i=0; i<4; i++)
-        {
-            for(int j=0; j<4; j++)
-            {
-                if(isAvailable(i,j, playerFlag))
-                {
-                    retval[0]++;
-                    retval[retval[0]] = 8*i+j;
-                }
-            }
-        }
-        return retval;
-    }
+    //     for(int i=0; i<4; i++)
+    //     {
+    //         for(int j=0; j<4; j++)
+    //         {
+    //             if(isAvailable(i,j, playerFlag))
+    //             {
+    //                 retval[0]++;
+    //                 retval[retval[0]] = 8*i+j;
+    //             }
+    //         }
+    //     }
+    //     return retval;
+    // }
 
-    bool isAvailable(int posx, int posy, bool playerFlag)
-    {
-        if(gameStatus[posx,posy] != 0) return false;
-        // North
-        int x = posx, y = posy;
-        if(++y > 8 || gameStatus[x,y] == 1+boolToInt(playerFlag)) return false;
-        // North East
-        // East
-        // SouthEast
-        // South
-        // SouthWest
-        // West
-        // NorthWest
-        return false;
-    }
+    // bool isAvailable(int posx, int posy, bool playerFlag)
+    // {
+    //     if(gameStatus[posx,posy] != 0) return false;
+    //     // North
+    //     int x = posx, y = posy;
+    //     if(++y > 8 || gameStatus[x,y] == 1+boolToInt(playerFlag)) return false;
+    //     // North East
+    //     // East
+    //     // SouthEast
+    //     // South
+    //     // SouthWest
+    //     // West
+    //     // NorthWest
+    //     return false;
+    // }
 
-    int boolToInt(bool input)
-    {
-        if(input) return 1;
-        return 0;
-    }
+    // int boolToInt(bool input)
+    // {
+    //     if(input) return 1;
+    //     return 0;
+    // }
 }
