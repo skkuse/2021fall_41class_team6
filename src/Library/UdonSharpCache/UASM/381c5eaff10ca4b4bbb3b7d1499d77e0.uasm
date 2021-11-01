@@ -1,0 +1,261 @@
+.data_start
+
+    .export names
+    .export ids
+    .export nameField
+    .export idField
+    .sync names, none
+    .sync ids, none
+
+    __refl_const_intnl_udonTypeID: %SystemInt64, null
+    __refl_const_intnl_udonTypeName: %SystemString, null
+    idField: %UnityEngineUIInputField, null
+    nameField: %UnityEngineUIInputField, null
+    ids: %SystemStringArray, null
+    names: %SystemStringArray, null
+    idAnimator: %UnityEngineAnimator, null
+    nameAnimator: %UnityEngineAnimator, null
+    i: %SystemInt32, null
+    size: %SystemInt32, null
+    __0_idNum_Int64: %SystemInt64, null
+    __0_id_String: %SystemString, null
+    __0_name_String: %SystemString, null
+    __2_const_intnl_SystemInt32: %SystemInt32, null
+    __1_const_intnl_SystemInt32: %SystemInt32, null
+    __0_const_intnl_SystemInt32: %SystemInt32, null
+    __4_const_intnl_SystemString: %SystemString, null
+    __3_const_intnl_SystemString: %SystemString, null
+    __2_const_intnl_SystemString: %SystemString, null
+    __1_const_intnl_SystemString: %SystemString, null
+    __0_const_intnl_SystemString: %SystemString, null
+    __0_const_intnl_SystemType: %SystemType, null
+    __0_const_intnl_SystemUInt32: %SystemUInt32, null
+    __6_intnl_SystemBoolean: %SystemBoolean, null
+    __5_intnl_SystemBoolean: %SystemBoolean, null
+    __4_intnl_SystemBoolean: %SystemBoolean, null
+    __3_intnl_SystemBoolean: %SystemBoolean, null
+    __2_intnl_SystemBoolean: %SystemBoolean, null
+    __1_intnl_SystemBoolean: %SystemBoolean, null
+    __0_intnl_SystemBoolean: %SystemBoolean, null
+    __1_intnl_UnityEngineGameObject: %UnityEngineGameObject, null
+    __0_intnl_UnityEngineGameObject: %UnityEngineGameObject, null
+    __0_intnl_SystemInt32: %SystemInt32, null
+    __1_intnl_UnityEngineTransform: %UnityEngineTransform, null
+    __0_intnl_UnityEngineTransform: %UnityEngineTransform, null
+    __0_intnl_returnTarget_UInt32: %SystemUInt32, null
+
+.data_end
+
+        
+         #  using UdonSharp;
+        
+         #  using UnityEngine;
+        
+         #  using VRC.SDKBase;
+        
+         #  using VRC.Udon;
+        
+         #  using UnityEngine.UI;
+        
+         #  public class Database : UdonSharpBehaviour
+.code_start
+        
+         #  [UdonSynced]
+        
+         #  [UdonSynced]
+        
+         #  public InputField nameField;
+        
+         #  public InputField idField;
+        
+         #  Animator nameAnimator;
+        
+         #  Animator idAnimator;
+        
+         #  const int size = 1000;
+        
+         #  int i = 0;
+        
+         #  public void Start()
+    .export _start
+        
+    _start:
+        
+        PUSH, __0_const_intnl_SystemUInt32
+        
+         #  {
+        
+         #  names = new string[1000];
+        PUSH, __0_const_intnl_SystemInt32
+        PUSH, names
+        EXTERN, "SystemStringArray.__ctor__SystemInt32__SystemStringArray"
+        
+         #  ids = new string[1000];
+        PUSH, __0_const_intnl_SystemInt32
+        PUSH, ids
+        EXTERN, "SystemStringArray.__ctor__SystemInt32__SystemStringArray"
+        
+         #  nameAnimator = nameField.gameObject.GetComponent<Animator>();
+        PUSH, nameField
+        PUSH, __0_intnl_UnityEngineGameObject
+        EXTERN, "UnityEngineUIInputField.__get_gameObject__UnityEngineGameObject"
+        PUSH, __0_intnl_UnityEngineGameObject
+        PUSH, __0_intnl_UnityEngineTransform
+        EXTERN, "UnityEngineGameObject.__get_transform__UnityEngineTransform"
+        PUSH, __0_intnl_UnityEngineTransform
+        PUSH, __0_const_intnl_SystemType
+        PUSH, nameAnimator
+        EXTERN, "UnityEngineAnimator.__GetComponent__T"
+        
+         #  idAnimator = idField.gameObject.GetComponent<Animator>();
+        PUSH, idField
+        PUSH, __1_intnl_UnityEngineGameObject
+        EXTERN, "UnityEngineUIInputField.__get_gameObject__UnityEngineGameObject"
+        PUSH, __1_intnl_UnityEngineGameObject
+        PUSH, __1_intnl_UnityEngineTransform
+        EXTERN, "UnityEngineGameObject.__get_transform__UnityEngineTransform"
+        PUSH, __1_intnl_UnityEngineTransform
+        PUSH, __0_const_intnl_SystemType
+        PUSH, idAnimator
+        EXTERN, "UnityEngineAnimator.__GetComponent__T"
+        PUSH, __0_intnl_returnTarget_UInt32 # Function epilogue
+        COPY
+        JUMP_INDIRECT, __0_intnl_returnTarget_UInt32
+        
+        
+         #  public void onSubmit()
+    .export onSubmit
+        
+    onSubmit:
+        
+        PUSH, __0_const_intnl_SystemUInt32
+        
+         #  {
+        
+         #  string name = nameField.text;
+        PUSH, nameField
+        PUSH, __0_name_String
+        EXTERN, "UnityEngineUIInputField.__get_text__SystemString"
+        
+         #  string id = idField.text;
+        PUSH, idField
+        PUSH, __0_id_String
+        EXTERN, "UnityEngineUIInputField.__get_text__SystemString"
+        
+         #  long idNum = 0;
+        PUSH, __1_const_intnl_SystemInt32
+        PUSH, __0_idNum_Int64
+        EXTERN, "SystemConvert.__ToInt64__SystemInt32__SystemInt64"
+        
+         #  if (!long.TryParse(id, out idNum) || id.Length > 10)
+        PUSH, __0_id_String
+        PUSH, __0_idNum_Int64
+        PUSH, __1_intnl_SystemBoolean
+        EXTERN, "SystemInt64.__TryParse__SystemString_SystemInt64Ref__SystemBoolean"
+        PUSH, __1_intnl_SystemBoolean
+        PUSH, __2_intnl_SystemBoolean
+        EXTERN, "SystemBoolean.__op_UnaryNegation__SystemBoolean__SystemBoolean"
+        PUSH, __2_intnl_SystemBoolean
+        PUSH, __0_intnl_SystemBoolean
+        COPY
+        PUSH, __0_intnl_SystemBoolean
+        PUSH, __3_intnl_SystemBoolean
+        EXTERN, "SystemBoolean.__op_UnaryNegation__SystemBoolean__SystemBoolean"
+        PUSH, __3_intnl_SystemBoolean
+        JUMP_IF_FALSE, 0x0000021C
+        PUSH, __0_id_String
+        PUSH, __0_intnl_SystemInt32
+        EXTERN, "SystemString.__get_Length__SystemInt32"
+        PUSH, __0_intnl_SystemInt32
+        PUSH, __2_const_intnl_SystemInt32
+        PUSH, __4_intnl_SystemBoolean
+        EXTERN, "SystemInt32.__op_GreaterThan__SystemInt32_SystemInt32__SystemBoolean"
+        PUSH, __0_intnl_SystemBoolean
+        PUSH, __4_intnl_SystemBoolean
+        PUSH, __5_intnl_SystemBoolean
+        EXTERN, "SystemBoolean.__op_ConditionalOr__SystemBoolean_SystemBoolean__SystemBoolean"
+        PUSH, __5_intnl_SystemBoolean
+        PUSH, __0_intnl_SystemBoolean
+        COPY
+        PUSH, __0_intnl_SystemBoolean
+        JUMP_IF_FALSE, 0x00000264
+        
+         #  {
+        
+         #  idAnimator.SetTrigger("incorrect");
+        PUSH, idAnimator
+        PUSH, __0_const_intnl_SystemString
+        EXTERN, "UnityEngineAnimator.__SetTrigger__SystemString__SystemVoid"
+        
+         #  idField.text = "Wrong ID";
+        PUSH, idField
+        PUSH, __1_const_intnl_SystemString
+        EXTERN, "UnityEngineUIInputField.__set_text__SystemString__SystemVoid"
+        JUMP, 0x00000384
+        
+         #  else if(i < size)
+        PUSH, i
+        PUSH, size
+        PUSH, __6_intnl_SystemBoolean
+        EXTERN, "SystemInt32.__op_LessThan__SystemInt32_SystemInt32__SystemBoolean"
+        PUSH, __6_intnl_SystemBoolean
+        JUMP_IF_FALSE, 0x0000033C
+        
+         #  {
+        
+         #  idAnimator.SetTrigger("correct");
+        PUSH, idAnimator
+        PUSH, __2_const_intnl_SystemString
+        EXTERN, "UnityEngineAnimator.__SetTrigger__SystemString__SystemVoid"
+        
+         #  nameAnimator.SetTrigger("correct");
+        PUSH, nameAnimator
+        PUSH, __2_const_intnl_SystemString
+        EXTERN, "UnityEngineAnimator.__SetTrigger__SystemString__SystemVoid"
+        
+         #  names[i] = name;
+        PUSH, names
+        PUSH, i
+        PUSH, __0_name_String
+        EXTERN, "SystemStringArray.__Set__SystemInt32_SystemString__SystemVoid"
+        
+         #  ids[i] = id;
+        PUSH, ids
+        PUSH, i
+        PUSH, __0_id_String
+        EXTERN, "SystemStringArray.__Set__SystemInt32_SystemString__SystemVoid"
+        
+         #  idField.text = "";
+        PUSH, idField
+        PUSH, __3_const_intnl_SystemString
+        EXTERN, "UnityEngineUIInputField.__set_text__SystemString__SystemVoid"
+        
+         #  nameField.text = "";
+        PUSH, nameField
+        PUSH, __3_const_intnl_SystemString
+        EXTERN, "UnityEngineUIInputField.__set_text__SystemString__SystemVoid"
+        JUMP, 0x00000384
+        
+         #  else
+        
+         #  {
+        
+         #  idAnimator.SetTrigger("incorrect");
+        PUSH, idAnimator
+        PUSH, __0_const_intnl_SystemString
+        EXTERN, "UnityEngineAnimator.__SetTrigger__SystemString__SystemVoid"
+        
+         #  nameAnimator.SetTrigger("incorrect");
+        PUSH, nameAnimator
+        PUSH, __0_const_intnl_SystemString
+        EXTERN, "UnityEngineAnimator.__SetTrigger__SystemString__SystemVoid"
+        
+         #  idField.text = "No More Space";
+        PUSH, idField
+        PUSH, __4_const_intnl_SystemString
+        EXTERN, "UnityEngineUIInputField.__set_text__SystemString__SystemVoid"
+        PUSH, __0_intnl_returnTarget_UInt32 # Function epilogue
+        COPY
+        JUMP_INDIRECT, __0_intnl_returnTarget_UInt32
+        
+.code_end
