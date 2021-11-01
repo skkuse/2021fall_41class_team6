@@ -12,6 +12,10 @@
 
 !/[Ll]ibrary/ScriptAssemblies/
 !/[Ll]ibrary/UdonSharpCache/
+/[Ll]ibrary/ScriptAssemblies/Assembly-Csharp.dll
+/[Ll]ibrary/ScriptAssemblies/Assembly-Csharp-Editor.dll
+/[Ll]ibrary/UdonSharpCache/UdonSharpEditorCache.asset
+/[Ll]ibrary/UdonSharpCache/UASM/
 
 # MemoryCaptures can get excessive in size.
 # They also could contain extremely sensitive data
