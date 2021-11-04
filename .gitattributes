@@ -1,0 +1,4 @@
+CubemapStars.cubemap filter=lfs diff=lfs merge=lfs -text
+CubemapStarsNamed.cubemap filter=lfs diff=lfs merge=lfs -text
+CubemapStarsNamedConstellations filter=lfs diff=lfs merge=lfs -text
+CubemapStarsNamedConstellations.cubemap filter=lfs diff=lfs merge=lfs -text
