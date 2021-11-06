@@ -21,16 +21,26 @@ public class StartButtonScript : UdonSharpBehaviour
     public override void Interact()
     {
         gameBoardBehaviour.setByStartButton(Networking.LocalPlayer.playerId);
-        SendCustomNetworkEvent(VRC.Udon.Common.Interfaces.NetworkEventTarget.All, $"setInactiveGlobal");
+        setInactiveGlobal();
     }
 
-    public void setInactiveGlobal()
+    public void setInactive()
     {
         gameObject.SetActive(false);
     }
 
-    public void SetActiveGlobal()
+    public void setActive()
     {
         gameObject.SetActive(true);
+    }
+
+    public void setActiveGlobal()
+    {
+        SendCustomNetworkEvent(VRC.Udon.Common.Interfaces.NetworkEventTarget.All, "setActive");
+    }
+
+    public void setInactiveGlobal()
+    {
+        SendCustomNetworkEvent(VRC.Udon.Common.Interfaces.NetworkEventTarget.All, "setInactive");
     }
 }
