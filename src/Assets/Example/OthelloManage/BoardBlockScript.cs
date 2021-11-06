@@ -32,9 +32,14 @@ public class BoardBlockScript : UdonSharpBehaviour
 
     public void setStoneTexture()
     {
-        int flag = gameBoardBehaviour.bitmasker.getStatus(gameObject.transform.GetSiblingIndex(), gameBoardBehaviour.g1, gameBoardBehaviour.g2);
-        rend.sharedMaterial = materials[flag];
-        rend.enabled = flag == 0 ? false : true;
+        int flag = gameBoardBehaviour.getStatus(gameObject.transform.GetSiblingIndex());
+        if(flag == 0)
+            rend.enabled = false;
+        else
+        {
+            rend.enabled = true;
+            rend.sharedMaterial = materials[flag-1];
+        }
     }
 
     public void setInteractivenessGlobal()
