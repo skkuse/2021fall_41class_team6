@@ -286,7 +286,7 @@ MonoBehaviour:
           PublicKeyToken=b77a5c561934e089|True
     - fullName: Const_UnityEngineVector3
       uid: 175488c4-76a0-468d-a2a7-215342717e64
-      position: {x: 1143.4115, y: -150.37166}
+      position: {x: 1094.3322, y: -116.54074}
       nodeUIDs:
       - 
       flowUIDs: []
@@ -325,7 +325,7 @@ MonoBehaviour:
     uid: 2e1719f8-fccb-48ee-aa48-87eb4a935284
     jsonData: '{"visible":true,"layout":{"serializedVersion":"2","x":22.0,"y":33.0,"width":227.0,"height":172.0}}'
   viewTransform:
-    position: {x: -242, y: 632}
-    scale: 0.94727594
+    position: {x: 417, y: 195}
+    scale: 0.57175326
   version: 1.0.0
   showAssembly: 0
