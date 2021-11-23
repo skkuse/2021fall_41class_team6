@@ -23,7 +23,6 @@ public class PasswordDoor : UdonSharpBehaviour
 
     public void onSubmit()
     {
-        Debug.Log(password);
         if(inputText.text.Equals(password))
         {
             door.SetActive(false);
