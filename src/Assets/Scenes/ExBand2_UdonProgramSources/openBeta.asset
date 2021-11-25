@@ -150,7 +150,7 @@ MonoBehaviour:
     uid: bb89fc91-bb51-420d-a6cb-906e0f8f5d52
     jsonData: '{"visible":true,"layout":{"serializedVersion":"2","x":52.0,"y":52.0,"width":200.0,"height":100.0}}'
   viewTransform:
-    position: {x: -50, y: 145}
-    scale: 0.7561437
+    position: {x: 20, y: 165.6}
+    scale: 1.15
   version: 1.0.0
   showAssembly: 1

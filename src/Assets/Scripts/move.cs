@@ -1,35 +1,29 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using UdonSharp;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using VRC.SDKBase;
+using VRC.Udon;
 
-public class move : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
-{   
-    bool isPressed = false;
+public class move : UdonSharpBehaviour
+{ 
     public GameObject Lights;
 
     // Start is called before the first frame update
     void Start()
     {
-        if(isPressed)
-        {
-            Lights.transform.Translate(0.2f, 0,0);
-        }
+
     }
 
     // Update is called once per frame
-    void Update()
+    public override void Interact()
     {
-        
+        SendCustomNetworkEvent(VRC.Udon.Common.Interfaces.NetworkEventTarget.All, "moveLight");
     }
 
-    public void OnPointerDown(PointerEventData eventData)
+    public void moveLight()
     {
-        isPressed = true;
+        Lights.transform.Translate(0.2f, 0, 0);
     }
 
-    public void OnPointerUp(PointerEventData eventData)
-    {
-        isPressed = false;
-    }
+
 }
