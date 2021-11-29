@@ -13,8 +13,6 @@ public class BoardBlockScript : UdonSharpBehaviour
     Renderer rend;
     GameObject gameBoard;
     BoardScript gameBoardBehaviour;
-    [UdonSynced]
-    int boardFlag = 0;
 
     void Start()
     {
@@ -22,43 +20,45 @@ public class BoardBlockScript : UdonSharpBehaviour
         gameBoardBehaviour = gameBoard.GetComponent<BoardScript>();
         
         rend = GetComponent<Renderer>();
-        rend.enabled = true;
+        rend.enabled = false;
         rend.sharedMaterial = materials[0];
         DisableInteractive = true;
     }
 
-    public void setStone(int flag)
-    {
-        Networking.SetOwner(Networking.LocalPlayer, gameObject);
-        boardFlag = flag;
-        RequestSerialization();
-        SendCustomNetworkEvent(VRC.Udon.Common.Interfaces.NetworkEventTarget.All, "setStoneTextureGlobal");
-    }
-
     public void setStoneTextureGlobal()
     {
-        if(boardFlag==0) rend.sharedMaterial = materials[0];
-        else if(boardFlag==1) rend.sharedMaterial = materials[1];
-        else if(boardFlag==2) rend.sharedMaterial = materials[2];       
+        SendCustomNetworkEvent(VRC.Udon.Common.Interfaces.NetworkEventTarget.All, "setStoneTexture");
     }
 
-    public void setInteractiveness()
+    public void setStoneTexture()
     {
-        SendCustomNetworkEvent(VRC.Udon.Common.Interfaces.NetworkEventTarget.All, "setInteractivenessGlobal");
+        int flag = gameBoardBehaviour.getStatus(gameObject.transform.GetSiblingIndex());
+        if(flag == 0)
+            rend.enabled = false;
+        else
+        {
+            rend.enabled = true;
+            rend.sharedMaterial = materials[flag-1];
+        }
     }
 
     public void setInteractivenessGlobal()
+    {
+        SendCustomNetworkEvent(VRC.Udon.Common.Interfaces.NetworkEventTarget.All, "setInteractiveness");
+    }
+
+    public void setInteractiveness()
     {
         if(Networking.LocalPlayer.playerId == gameBoardBehaviour.currentTurnPlayerId) DisableInteractive = false;
         else DisableInteractive = true;
     }
 
-    public void setInteractivenessFalse()
+    public void setInteractivenessFalseGlobal()
     {
-        SendCustomNetworkEvent(VRC.Udon.Common.Interfaces.NetworkEventTarget.All, "setInteractivenessFalseGlobal");
+        SendCustomNetworkEvent(VRC.Udon.Common.Interfaces.NetworkEventTarget.All, "setInteractivenessFalse");
     }
 
-    public void setInteractivenessFalseGlobal()
+    public void setInteractivenessFalse()
     {
         DisableInteractive = true;
     }
