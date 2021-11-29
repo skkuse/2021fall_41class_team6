@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public class OpenAdminButton : UdonSharpBehaviour
 {
-    bool open = true;
+    bool open = false;
     public GameObject door;
     public Animator warningAnim;
     public Text btnText;
@@ -17,7 +17,7 @@ public class OpenAdminButton : UdonSharpBehaviour
         if(Networking.IsMaster)
         {
             open = !open;
-            door.SetActive(open);
+            door.SetActive(!open);
             if(open)
             {
                 btnText.text = "close";
