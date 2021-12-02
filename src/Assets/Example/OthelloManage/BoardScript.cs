@@ -13,23 +13,22 @@ public class BoardScript : UdonSharpBehaviour
     [UdonSynced]
     public bool blackStartFlag = false;
     [UdonSynced]
-    public bool winnerFlag = false;
-    [UdonSynced]
     public bool currentTurnFlag = false; // false: black, True: white
     [UdonSynced]
     public int currentTurnPlayerId = -1;
 
-
-    // 0: 돌 없음, 1: 검정 돌, 2: 흰색 돌
+    // g1, g2 -> game board bitmask. 0: 돌 없음, 1: 검정 돌, 2: 흰색 돌
     [UdonSynced]
-    public int[] gameStatus = new int[16];
+    public ulong g1 = 0;
+    [UdonSynced]
+    public ulong g2 = 0;
+
     [UdonSynced]
     public int blackId = -1, whiteId = -1;
 
 
     void Start()
     {
-        Debug.Log("[DORIKA_OUTPUT] Board Script initialize");
     }
 
     public void setByStartButton(int inputId)
@@ -38,7 +37,6 @@ public class BoardScript : UdonSharpBehaviour
         if(!blackStartFlag)
         {
             blackStartFlag = true;
-            // gameObject.transform.GetChild(16).gameObject.SetActive(false);
             Debug.Log("[DORIKA_OUTPUT] black ID : " + blackId + " -> " + inputId);
             blackId = inputId;
             RequestSerialization();
@@ -47,7 +45,6 @@ public class BoardScript : UdonSharpBehaviour
         if(!whiteStartFlag)
         {
             whiteStartFlag = true;
-            // gameObject.transform.GetChild(17).gameObject.SetActive(false);
             Debug.Log("[DORIKA_OUTPUT] white ID : " + whiteId + " -> " + inputId);
             whiteId = inputId;
             RequestSerialization();
@@ -61,20 +58,14 @@ public class BoardScript : UdonSharpBehaviour
         whiteStartFlag = false;
         blackStartFlag = false;
         currentTurnFlag = false;
-
-        for(int i=0; i<4; i++)
-        {
-            for(int j=0; j<4; j++)
-            {
-                gameStatus[4*i+j]=0;
-            }
-        }
+        g1=g2=0;
 
         // set middle 4 blocks
-        gameStatus[5] = 1;
-        gameStatus[6] = 2;
-        gameStatus[9] = 2;
-        gameStatus[10] = 1;
+        setStatus(27,  1);
+        setStatus(28,  2);
+        setStatus(35,  2);
+        setStatus(36,  1);
+
         RequestSerialization();
 
 
@@ -90,26 +81,26 @@ public class BoardScript : UdonSharpBehaviour
         Debug.Log("[DORIKA_OUTPUT] Turn Player ID : " + currentTurnPlayerId);
         int[] spotsInfo = availableSpots();
         int counter = 0;
-        for(int i=0; i<16; i++)
+        for(int i=0; i<64; i++)
         {
-            gameObject.transform.GetChild(i).GetComponent<BoardBlockScript>().setStone(gameStatus[i]);
+            gameObject.transform.GetChild(i).GetComponent<BoardBlockScript>().setStoneTextureGlobal();
             if(counter < spotsInfo[0] && i == spotsInfo[counter+1])
             {
-                gameObject.transform.GetChild(i).GetComponent<BoardBlockScript>().setInteractiveness();
+                gameObject.transform.GetChild(i).GetComponent<BoardBlockScript>().setInteractivenessGlobal();
                 counter++;
             }
-            else gameObject.transform.GetChild(i).GetComponent<BoardBlockScript>().setInteractivenessFalse();
+            else gameObject.transform.GetChild(i).GetComponent<BoardBlockScript>().setInteractivenessFalseGlobal();
         }
     }
 
     public void updateByInteract(int index)
     {
         Networking.SetOwner(Networking.LocalPlayer, gameObject);
-        gameStatus[index] = boolToInt(currentTurnFlag);
+        setStatus(index,  boolToInt(currentTurnFlag));
 
-        int posx = index/4;
-        int posy = index%4;
-        int[] changingIndex = new int[16];
+        int posx = index/8;
+        int posy = index%8;
+        int[] changingIndex = new int[65];
 
 
         //놓은 돌 기준 업데이트
@@ -118,16 +109,16 @@ public class BoardScript : UdonSharpBehaviour
         Debug.Log("[DORIKA_OUTPUT] Clicked index = " + index);
 
         // 북 (+y)
-        if(++y<4 && gameStatus[4*x+y] == boolToInt(!currentTurnFlag))
+        if(++y<8 && getStatus(8*x+y) == boolToInt(!currentTurnFlag))
         {
-            while(++y<4)
+            while(++y<8)
             {
-                if(gameStatus[4*x+y] == boolToInt(currentTurnFlag))
+                if(getStatus(8*x+y) == boolToInt(currentTurnFlag))
                 {
                     while(--y > posy)
                     {
                         changingIndex[0]++;
-                        changingIndex[changingIndex[0]] = 4*x+y;
+                        changingIndex[changingIndex[0]] = 8*x+y;
                     }
                     break;
                 }
@@ -136,16 +127,16 @@ public class BoardScript : UdonSharpBehaviour
         // 북동 (+x, +y)
         x = posx;
         y = posy;
-        if(++y<4 && ++x<4 && gameStatus[4*x+y] == boolToInt(!currentTurnFlag))
+        if(++y<8 && ++x<8 && getStatus(8*x+y) == boolToInt(!currentTurnFlag))
         {
-            while(++y<4 && ++x<4)
+            while(++y<8 && ++x<8)
             {
-                if(gameStatus[4*x+y] == boolToInt(currentTurnFlag))
+                if(getStatus(8*x+y) == boolToInt(currentTurnFlag))
                 {
                     while(--y>posy && --x>posx)
                     {
                         changingIndex[0]++;
-                        changingIndex[changingIndex[0]] = 4*x+y;
+                        changingIndex[changingIndex[0]] = 8*x+y;
                     }
                     break;
                 }
@@ -154,16 +145,16 @@ public class BoardScript : UdonSharpBehaviour
         // 동 (+x)
         x = posx;
         y = posy;
-        if(++x<4 && gameStatus[4*x+y] == boolToInt(!currentTurnFlag))
+        if(++x<8 && getStatus(8*x+y) == boolToInt(!currentTurnFlag))
         {
-            while(++x<4)
+            while(++x<8)
             {
-                if(gameStatus[4*x+y] == boolToInt(currentTurnFlag))
+                if(getStatus(8*x+y) == boolToInt(currentTurnFlag))
                 {
                     while(--x>posx)
                     {
                         changingIndex[0]++;
-                        changingIndex[changingIndex[0]] = 4*x+y;
+                        changingIndex[changingIndex[0]] = 8*x+y;
                     }
                     break;
                 }
@@ -172,16 +163,16 @@ public class BoardScript : UdonSharpBehaviour
         // 남동 (+x, -y)
         x = posx;
         y = posy;
-        if(++x<4 && --y>=0 && gameStatus[4*x+y] == boolToInt(!currentTurnFlag))
+        if(++x<8 && --y>=0 && getStatus(8*x+y) == boolToInt(!currentTurnFlag))
         {
-            while(++x<4 && --y>=0)
+            while(++x<8 && --y>=0)
             {
-                if(gameStatus[4*x+y] == boolToInt(currentTurnFlag))
+                if(getStatus(8*x+y) == boolToInt(currentTurnFlag))
                 {
                     while(++y<posy && --x>posx)
                     {
                         changingIndex[0]++;
-                        changingIndex[changingIndex[0]] = 4*x+y;
+                        changingIndex[changingIndex[0]] = 8*x+y;
                     }
                     break;
                 }
@@ -190,16 +181,16 @@ public class BoardScript : UdonSharpBehaviour
         // 남 (-y)
         x = posx;
         y = posy;
-        if(--y>=0 && gameStatus[4*x+y] == boolToInt(!currentTurnFlag))
+        if(--y>=0 && getStatus(8*x+y) == boolToInt(!currentTurnFlag))
         {
             while(--y>=0)
             {
-                if(gameStatus[4*x+y] == boolToInt(currentTurnFlag))
+                if(getStatus(8*x+y) == boolToInt(currentTurnFlag))
                 {
                     while(++y<posy)
                     {
                         changingIndex[0]++;
-                        changingIndex[changingIndex[0]] = 4*x+y;
+                        changingIndex[changingIndex[0]] = 8*x+y;
                     }
                     break;
                 }
@@ -208,16 +199,16 @@ public class BoardScript : UdonSharpBehaviour
         // 남서 (-x, -y)
         x = posx;
         y = posy;
-        if(--y>=0 &&--x>=0 && gameStatus[4*x+y] == boolToInt(!currentTurnFlag))
+        if(--y>=0 &&--x>=0 && getStatus(8*x+y) == boolToInt(!currentTurnFlag))
         {
             while(--y>=0 &&--x>=0)
             {
-                if(gameStatus[4*x+y] == boolToInt(currentTurnFlag))
+                if(getStatus(8*x+y) == boolToInt(currentTurnFlag))
                 {
                     while(++y<posy && ++x<posx)
                     {
                         changingIndex[0]++;
-                        changingIndex[changingIndex[0]] = 4*x+y;
+                        changingIndex[changingIndex[0]] = 8*x+y;
                     }
                     break;
                 }
@@ -226,16 +217,16 @@ public class BoardScript : UdonSharpBehaviour
         // 서 (-x)
         x = posx;
         y = posy;
-        if(--x>=0 && gameStatus[4*x+y] == boolToInt(!currentTurnFlag))
+        if(--x>=0 && getStatus(8*x+y) == boolToInt(!currentTurnFlag))
         {
             while(--x>=0)
             {
-                if(gameStatus[4*x+y] == boolToInt(currentTurnFlag))
+                if(getStatus(8*x+y) == boolToInt(currentTurnFlag))
                 {
                     while(++x<posx)
                     {
                         changingIndex[0]++;
-                        changingIndex[changingIndex[0]] = 4*x+y;
+                        changingIndex[changingIndex[0]] = 8*x+y;
                     }
                     break;
                 }
@@ -244,23 +235,23 @@ public class BoardScript : UdonSharpBehaviour
         // 북서 (-x, +y)
         x = posx;
         y = posy;
-        if(--x>=0 && ++y<4 && gameStatus[4*x+y] == boolToInt(!currentTurnFlag))
+        if(--x>=0 && ++y<8 && getStatus(8*x+y) == boolToInt(!currentTurnFlag))
         {
-            while(--x>=0 && ++y<4)
+            while(--x>=0 && ++y<8)
             {
-                if(gameStatus[4*x+y] == boolToInt(currentTurnFlag))
+                if(getStatus(8*x+y) == boolToInt(currentTurnFlag))
                 {
                     while(++x<posx && --y>posy)
                     {
                         changingIndex[0]++;
-                        changingIndex[changingIndex[0]] = 4*x+y;
+                        changingIndex[changingIndex[0]] = 8*x+y;
                     }
                     break;
                 }
             }
         }
         for(int i=0; i<changingIndex[0]; i++)
-            gameStatus[changingIndex[i+1]] = boolToInt(currentTurnFlag);
+            setStatus(changingIndex[i+1],  boolToInt(currentTurnFlag));
         Debug.Log("[DORIKA_OUTPUT] changing list size "+ changingIndex[0]);
         currentTurnFlag = !currentTurnFlag;
         RequestSerialization();
@@ -274,10 +265,10 @@ public class BoardScript : UdonSharpBehaviour
         int[] retval = new int[17];
         retval[0] = 0; // 첫번째 값은 가능한 지점의 개수
 
-        for(int i=0; i<4; i++)
-            for(int j=0; j<4; j++)
+        for(int i=0; i<8; i++)
+            for(int j=0; j<8; j++)
                 if(isAvailable(i,j))
-                    retval[++retval[0]] = 4*i+j;
+                    retval[++retval[0]] = 8*i+j;
         return retval;
     }
 
@@ -287,7 +278,8 @@ public class BoardScript : UdonSharpBehaviour
     {
         int x, y;
         // 돌이 있으면 불가능
-        if(gameStatus[4*posx+posy] != 0) return false;
+        if(getStatus(8*posx+posy) != 0) return false;
+        
 
 
         // 8방향으로 검사
@@ -295,68 +287,71 @@ public class BoardScript : UdonSharpBehaviour
         x = posx;
         y = posy;
         // 바로 다음 돌이 현재의 돌과 다른 색이여야 가능성 있음
-        if(++y<4 && gameStatus[4*x+y] == boolToInt(!currentTurnFlag))
-            while(++y<4)
-                if(gameStatus[4*x+y] == boolToInt(currentTurnFlag)) return true;
+        if(++y<8 && getStatus(8*x+y) == boolToInt(!currentTurnFlag))
+            while(++y<8)
+                if(getStatus(8*x+y) == boolToInt(currentTurnFlag)) return true;
         // 북동 (+x, +y)
         x = posx;
         y = posy;
-        if(++x<4 && ++y<4 && gameStatus[4*x+y] == boolToInt(!currentTurnFlag))
-            while(++x<4 && ++y<4)
-                if(gameStatus[4*x+y] == boolToInt(currentTurnFlag)) return true;
+        if(++x<8 && ++y<8 && getStatus(8*x+y) == boolToInt(!currentTurnFlag))
+            while(++x<8 && ++y<8)
+                if(getStatus(8*x+y) == boolToInt(currentTurnFlag)) return true;
         // 동 (+x)
         x = posx;
         y = posy;
-        if(++x<4 && gameStatus[4*x+y] == boolToInt(!currentTurnFlag))
-            while(++x<4)
-                if(gameStatus[4*x+y] == boolToInt(currentTurnFlag)) return true;
+        if(++x<8 && getStatus(8*x+y) == boolToInt(!currentTurnFlag))
+            while(++x<8)
+                if(getStatus(8*x+y) == boolToInt(currentTurnFlag)) return true;
         // 남동 (+x, -y)
         x = posx;
         y = posy;
-        if(++x<4 && --y>=0 && gameStatus[4*x+y] == boolToInt(!currentTurnFlag))
-            while(++x<4 && --y>=0)
-                if(gameStatus[4*x+y] == boolToInt(currentTurnFlag)) return true;
+        if(++x<8 && --y>=0 && getStatus(8*x+y) == boolToInt(!currentTurnFlag))
+            while(++x<8 && --y>=0)
+                if(getStatus(8*x+y) == boolToInt(currentTurnFlag)) return true;
         // 남 (-y)
         x = posx;
         y = posy;
-        if(--y>=0 && gameStatus[4*x+y] == boolToInt(!currentTurnFlag))
+        if(--y>=0 && getStatus(8*x+y) == boolToInt(!currentTurnFlag))
             while(--y>=0)
-                if(gameStatus[4*x+y] == boolToInt(currentTurnFlag)) return true;
+                if(getStatus(8*x+y) == boolToInt(currentTurnFlag)) return true;
         // 남서 (-x, -y)
         x = posx;
         y = posy;
-        if(--y>=0 && --x>=0 && gameStatus[4*x+y] == boolToInt(!currentTurnFlag))
+        if(--y>=0 && --x>=0 && getStatus(8*x+y) == boolToInt(!currentTurnFlag))
             while(--y>=0 && --x>=0)
-                if(gameStatus[4*x+y] == boolToInt(currentTurnFlag)) return true;
+                if(getStatus(8*x+y) == boolToInt(currentTurnFlag)) return true;
         // 서 (-x)
         x = posx;
         y = posy;
-        if(--x>=0 && gameStatus[4*x+y] == boolToInt(!currentTurnFlag))
+        if(--x>=0 && getStatus(8*x+y) == boolToInt(!currentTurnFlag))
             while(--x>=0)
-                if(gameStatus[4*x+y] == boolToInt(currentTurnFlag)) return true;
+                if(getStatus(8*x+y) == boolToInt(currentTurnFlag)) return true;
         // 북서 (-x, +y)
         x = posx;
         y = posy;
-        if(--x>=0 && ++y<4 && gameStatus[4*x+y] == boolToInt(!currentTurnFlag))
-            while(--x>=0 && ++y<4)
-                if(gameStatus[4*x+y] == boolToInt(currentTurnFlag)) return true;
+        if(--x>=0 && ++y<8 && getStatus(8*x+y) == boolToInt(!currentTurnFlag))
+            while(--x>=0 && ++y<8)
+                if(getStatus(8*x+y) == boolToInt(currentTurnFlag)) return true;
         return false;
     }
 
     //승패 판별 후 게임 종료.
     public void killGame()
     {
-        // 승패 판별
-        int counter = 0;
-        for(int i=0; i<4; i++)
+        Networking.SetOwner(Networking.LocalPlayer, gameObject);
+        g1=g2=0;
+        currentTurnFlag = false;
+        currentTurnPlayerId = -1;
+        blackId = -1;
+        whiteId = -1;
+        RequestSerialization();
+        for(int i=0; i<64; i++)
         {
-            for(int j=0; j<4; j++)
-            {
-                counter = gameStatus[4*i+j] == 1 ? counter+1 : counter-1;
-            }
+            gameObject.transform.GetChild(i).GetComponent<BoardBlockScript>().setStoneTextureGlobal();
+            gameObject.transform.GetChild(i).GetComponent<BoardBlockScript>().setInteractivenessFalseGlobal();
         }
-        // gameFlag = false;
-        winnerFlag = counter > 0 ? false : true; // false: 검정 플레이어, true: 흰색 플레이어
+        gameObject.transform.GetChild(64).GetComponent<StartButtonScript>().setActiveGlobal();
+        gameObject.transform.GetChild(65).GetComponent<StartButtonScript>().setActiveGlobal();
     }
 
     
@@ -366,4 +361,36 @@ public class BoardScript : UdonSharpBehaviour
         if(input) return 2;
         return 1;
     }
+
+    public int getStatus(int index)
+    {
+        int outer = index/32;
+        int inner = index%32;
+
+        ulong retval = outer == 0 ? g1 : g2; //statusField[outer];
+        retval = retval << (inner*2);
+        retval = retval >> 62;
+
+        return (int)retval;
+    }
+
+    public void setStatus(int index, int targetData)
+    {
+        int outer = index/32;
+        int inner = index%32;
+
+        // statusField[outer] init
+        ulong initializer = ~((ulong)3 << ((31-inner)*2));
+
+        if(outer == 0)
+        {
+            g1 = g1 & initializer;
+            g1 = g1 | ((ulong)targetData << ((31-inner)*2));
+        }
+        else
+        {
+            g2 = g2 & initializer;
+            g2 = g2 | ((ulong)targetData << ((31-inner)*2));
+        }
+    }    
 }
