@@ -9,7 +9,7 @@ public class AstroManager : UdonSharpBehaviour
 
 
     // 초기 설정 - 우주 배경이니 중력을 약하게 부여했습니다.
-    VRCPlayerApi playerApi;
+    public VRCPlayerApi playerApi;
 
     [Header("Player Settings")]
     [SerializeField] float jumpImpulse = 5;
