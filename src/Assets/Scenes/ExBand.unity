@@ -4696,7 +4696,7 @@ PrefabInstance:
     - target: {fileID: 305015082525052191, guid: 26c6249271175d84a84b520657f1cf88,
         type: 3}
       propertyPath: m_DrawHalo
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 305015082525052191, guid: 26c6249271175d84a84b520657f1cf88,
         type: 3}
