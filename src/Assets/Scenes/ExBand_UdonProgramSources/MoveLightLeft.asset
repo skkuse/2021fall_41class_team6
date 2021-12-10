@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c333ccfdd0cbdbc4ca30cef2dd6e6b9b, type: 3}
-  m_Name: Cube Udon C# Program Asset
+  m_Name: MoveLightLeft
   m_EditorClassIdentifier: 
-  serializedUdonProgramAsset: {fileID: 11400000, guid: ed26095d8cc2df444aa33fe3ccc6d2dd,
+  serializedUdonProgramAsset: {fileID: 11400000, guid: af183eb1953eaec48a2a21ae93dec6f0,
     type: 2}
   udonAssembly: 
   assemblyError: 
-  sourceCsScript: {fileID: 11500000, guid: 1d353bc4a4c16b045bcb5fef20b77453, type: 3}
+  sourceCsScript: {fileID: 11500000, guid: f49e935e3fdb38640a35db24ad5b1acc, type: 3}
   behaviourSyncMode: 0
   behaviourIDHeapVarName: __refl_const_intnl_udonTypeID
   compileErrors: []
