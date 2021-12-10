@@ -33,7 +33,7 @@ public class AdminDatabase : UdonSharpBehaviour
 
     public void setNext()
     {
-        if(idx <  doors.Length - 1)
+        if(idx < doors.Length - 1)
         {
             idx++;
         }
@@ -41,9 +41,10 @@ public class AdminDatabase : UdonSharpBehaviour
         {
             idx = 0;
         }
-        descText.text = string.Format("{0}번 부스", idx + 1);
+        descText.text = (idx + 1) + "번 부스";
         inputText.text = passwords[idx];
     }
+
     public void setPrev()
     {
         if (idx > 0)
@@ -54,7 +55,7 @@ public class AdminDatabase : UdonSharpBehaviour
         {
             idx = doors.Length - 1;
         }
-        descText.text = string.Format("{0}번 부스", idx + 1);
+        descText.text = (idx + 1) + "번 부스";
         inputText.text = passwords[idx];
     }
 }

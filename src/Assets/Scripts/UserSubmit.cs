@@ -10,25 +10,11 @@ using VRC.Udon.Common;
 public class UserSubmit : UdonSharpBehaviour
 {
     [UdonSynced]
-    public string _username;
+    public string username;
     [UdonSynced]
-    public string _id;
+    public string id;
     [UdonSynced]
-    public string _email;
-
-    public string username
-    {
-        get => _username;
-    }
-    public string id
-    {
-        get => _id;
-    }
-
-    public string email
-    {
-        get => _email;
-    }
+    public string email;
 
     public InputField nameField;
     public InputField idField;
@@ -52,14 +38,13 @@ public class UserSubmit : UdonSharpBehaviour
 
         Networking.SetOwner(player, gameObject);
 
-        _username = nameField.text;
-        _id = idField.text;
-        _email = emailField.text;
+        username = nameField.text;
+        id = idField.text;
+        email = emailField.text;
 
         int atPos = email.IndexOf('@');
         bool atCond = atPos != -1 && atPos == email.LastIndexOf('@');
         bool dotCond = !email.EndsWith(".") && email.IndexOf('.') != -1;
-
         long idNum = 0;
         if (!long.TryParse(id, out idNum) || id.Length > 10)
         {
@@ -71,7 +56,7 @@ public class UserSubmit : UdonSharpBehaviour
             emailAnimator.SetTrigger("incorrect");
             emailField.text = "Wrong Email";
         }
-        else if (database.idx < database.size - 1) //성공
+        else if (database.idx < database.size - 1) //성공 
         {
             idAnimator.SetTrigger("correct");
             nameAnimator.SetTrigger("correct");
