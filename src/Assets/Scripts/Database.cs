@@ -11,40 +11,79 @@ public class Database : UdonSharpBehaviour
     public string[] ids;
     public string[] emails;
 
-    public UserSubmit userSubmit;
-
     public Text[] texts;
     public Text[] pageTexts;
 
-    const int _size = 1000;
-    int _idx = -1;
-    int _page = 1;
+    public InputField nameField;
+    public InputField idField;
+    public InputField emailField;
+    Animator nameAnimator;
+    Animator idAnimator;
+    Animator emailAnimator;
 
-    public int idx
-    {
-        get => _idx;
-    }
-    public int size
-    {
-        get => _size;
-    }
+    const int size = 1000;
+    int idx = 0;
+    int page = 0;
 
     public void Start()
     {
-        names = new string[size];
-        ids = new string[size];
-        emails = new string[size];
+        names = new string[1000];
+        ids = new string[1000];
+        emails = new string[1000];
+
+        nameAnimator = nameField.gameObject.GetComponent<Animator>();
+        idAnimator = idField.gameObject.GetComponent<Animator>();
+        emailAnimator = emailField.gameObject.GetComponent<Animator>();
     }
 
     public void onSubmit()
     {
-        _idx++;
-        names[idx] = userSubmit.username;
-        ids[idx] = userSubmit.id;
-        emails[idx] = userSubmit.email;
+        string name = nameField.text;
+        string id = idField.text;
+        string email = emailField.text;
 
-        onChangePage();
+        int atPos = email.IndexOf('@');
+        bool atCond = atPos != -1 && atPos == email.LastIndexOf('@');
+        bool dotCond = !email.EndsWith(".") && email.IndexOf('.') != -1;
+
+        long idNum = 0;
+        if (!long.TryParse(id, out idNum) || id.Length > 10)
+        {
+            idAnimator.SetTrigger("incorrect");
+            idField.text = "Wrong ID";
+        }
+        else if (!atCond || !dotCond)
+        {
+            emailAnimator.SetTrigger("incorrect");
+            emailField.text = "Wrong Email";
+        }
+        else if(idx < size) //성공
+        {
+            idAnimator.SetTrigger("correct");
+            nameAnimator.SetTrigger("correct");
+            emailAnimator.SetTrigger("correct");
+
+            names[idx] = name;
+            ids[idx] = id;
+            emails[idx] = email;
+
+            idField.text = "";
+            nameField.text = "";
+            emailField.text = "";
+
+            idx++;
+            setTexts();
+        }
+        else
+        {
+            idAnimator.SetTrigger("incorrect");
+            nameAnimator.SetTrigger("incorrect");
+            emailAnimator.SetTrigger("incorrect");
+
+            idField.text = "No More Space";
+        }
     }
+
 
     /*
      Pagination 관련 코드 모음
@@ -53,17 +92,16 @@ public class Database : UdonSharpBehaviour
     {
         for (int i = 0; i < texts.Length; i++)
         {
-            int textIdx = (_page-1) * texts.Length + i;
+            int textIdx = (page-1) * texts.Length + i;
+            if (idx < textIdx)
+                continue;
             Text text = texts[i];
-            if (_idx < textIdx)
-                text.text = "";
-            else
-                text.text = string.Format("{0} / {1} / {2}", ids[textIdx], names[textIdx], emails[textIdx]);
+            text.text = string.Format("{0} / {1} / {2}", ids[textIdx], names[textIdx], emails[textIdx]);
         }
     }
-    private void setPageTexts()
+    private void setTexts()
     {
-        if (_page <= 4)
+        if (page <= 4)
         {
             for (int i = 0; i < pageTexts.Length; i++)
             {
@@ -74,51 +112,51 @@ public class Database : UdonSharpBehaviour
         {
             for (int i = 0; i < texts.Length; i++)
             {
-                pageTexts[i].text = (_page - 3 + i).ToString();
+                pageTexts[i].text = (page - 3 + i).ToString();
             }
         }
     }
 
     public void onClick1()
     {
-        _page = int.Parse(pageTexts[0].text);
-        setPageTexts();
+        page = int.Parse(pageTexts[0].text);
+        setTexts();
         onChangePage();
     }
     public void onClick2()
     {
-        _page = int.Parse(pageTexts[1].text);
-        setPageTexts();
+        page = int.Parse(pageTexts[1].text);
+        setTexts();
         onChangePage();
     }
     public void onClick3()
     {
-        _page = int.Parse(pageTexts[2].text);
-        setPageTexts();
+        page = int.Parse(pageTexts[2].text);
+        setTexts();
         onChangePage();
     }
     public void onClick4()
     {
-        _page = int.Parse(pageTexts[3].text);
-        setPageTexts();
+        page = int.Parse(pageTexts[3].text);
+        setTexts();
         onChangePage();
     }
     public void onClick5()
     {
-        _page = int.Parse(pageTexts[4].text);
-        setPageTexts();
+        page = int.Parse(pageTexts[4].text);
+        setTexts();
         onChangePage();
     }
     public void onClick6()
     {
-        _page = int.Parse(pageTexts[5].text);
-        setPageTexts();
+        page = int.Parse(pageTexts[5].text);
+        setTexts();
         onChangePage();
     }
     public void onClick7()
     {
-        _page = int.Parse(pageTexts[6].text);
-        setPageTexts();
+        page = int.Parse(pageTexts[6].text);
+        setTexts();
         onChangePage();
     }
 }
