@@ -62,7 +62,14 @@ public class UserSubmit : UdonSharpBehaviour
             nameAnimator.SetTrigger("correct");
             emailAnimator.SetTrigger("correct");
 
-            RequestSerialization(); //성공 시에 동기화
+            if(Networking.IsMaster)
+            {
+                database.SendCustomNetworkEvent(VRC.Udon.Common.Interfaces.NetworkEventTarget.All, "onSubmit");
+            }
+            else 
+            {
+                RequestSerialization(); //성공 시에 동기화
+            }
 
             idField.text = "";
             nameField.text = "";
