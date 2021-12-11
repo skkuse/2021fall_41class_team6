@@ -15,6 +15,6 @@ public class MoveLightLeft : UdonSharpBehaviour
     public override void Interact()
     {
 
-        gameObject.transform.Translate(-0.2f, 0, 0);
+        gameObject.transform.Translate(-0.4f, 0, 0);
     }
 }
