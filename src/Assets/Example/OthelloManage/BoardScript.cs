@@ -3,7 +3,7 @@ using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
 using VRC.Udon;
-
+using VRC.Udon.Common;
 
 [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
 public class BoardScript : UdonSharpBehaviour
@@ -26,6 +26,8 @@ public class BoardScript : UdonSharpBehaviour
     [UdonSynced]
     public int blackId = -1, whiteId = -1;
 
+    [UdonSynced]
+    public int syncFlag = 0;
 
     void Start()
     {
@@ -37,18 +39,17 @@ public class BoardScript : UdonSharpBehaviour
         if(!blackStartFlag)
         {
             blackStartFlag = true;
-            Debug.Log("[DORIKA_OUTPUT] black ID : " + blackId + " -> " + inputId);
             blackId = inputId;
+            syncFlag = 0;
             RequestSerialization();
-            return;
         }
-        if(!whiteStartFlag)
+        else if(!whiteStartFlag)
         {
             whiteStartFlag = true;
-            Debug.Log("[DORIKA_OUTPUT] white ID : " + whiteId + " -> " + inputId);
             whiteId = inputId;
+            syncFlag = 1;
             RequestSerialization();
-            initializeGame();
+            // initializeGame();
         }
     }
 
@@ -66,31 +67,30 @@ public class BoardScript : UdonSharpBehaviour
         setStatus(35,  2);
         setStatus(36,  1);
 
+
+        syncFlag = 2;
         RequestSerialization();
-
-
-        // black starts
-        setTurn();
+        // setTurn();
     }
 
     public void setTurn()
     {
         Networking.SetOwner(Networking.LocalPlayer, gameObject);
         currentTurnPlayerId = currentTurnFlag ? whiteId : blackId;
+        syncFlag = 3;
         RequestSerialization();
-        Debug.Log("[DORIKA_OUTPUT] Turn Player ID : " + currentTurnPlayerId);
-        int[] spotsInfo = availableSpots();
-        int counter = 0;
-        for(int i=0; i<64; i++)
-        {
-            gameObject.transform.GetChild(i).GetComponent<BoardBlockScript>().setStoneTextureGlobal();
-            if(counter < spotsInfo[0] && i == spotsInfo[counter+1])
-            {
-                gameObject.transform.GetChild(i).GetComponent<BoardBlockScript>().setInteractivenessGlobal();
-                counter++;
-            }
-            else gameObject.transform.GetChild(i).GetComponent<BoardBlockScript>().setInteractivenessFalseGlobal();
-        }
+        // int[] spotsInfo = availableSpots();
+        // int counter = 0;
+        // for(int i=0; i<64; i++)
+        // {
+        //     gameObject.transform.GetChild(i).GetComponent<BoardBlockScript>().setStoneTextureGlobal();
+        //     if(counter < spotsInfo[0] && i == spotsInfo[counter+1])
+        //     {
+        //         gameObject.transform.GetChild(i).GetComponent<BoardBlockScript>().setInteractivenessGlobal();
+        //         counter++;
+        //     }
+        //     else gameObject.transform.GetChild(i).GetComponent<BoardBlockScript>().setInteractivenessFalseGlobal();
+        // }
     }
 
     public void updateByInteract(int index)
@@ -106,7 +106,7 @@ public class BoardScript : UdonSharpBehaviour
         //놓은 돌 기준 업데이트
         int x = posx;
         int y = posy;
-        Debug.Log("[DORIKA_OUTPUT] Clicked index = " + index);
+        // Debug.Log("[OUTPUT] Clicked index = " + index);
 
         // 북 (+y)
         if(++y<8 && getStatus(8*x+y) == boolToInt(!currentTurnFlag))
@@ -252,10 +252,11 @@ public class BoardScript : UdonSharpBehaviour
         }
         for(int i=0; i<changingIndex[0]; i++)
             setStatus(changingIndex[i+1],  boolToInt(currentTurnFlag));
-        Debug.Log("[DORIKA_OUTPUT] changing list size "+ changingIndex[0]);
+        // Debug.Log("[OUTPUT] changing list size "+ changingIndex[0]);
         currentTurnFlag = !currentTurnFlag;
+        syncFlag = 2;
         RequestSerialization();
-        setTurn();
+        // setTurn();
     }
 
     
@@ -344,14 +345,15 @@ public class BoardScript : UdonSharpBehaviour
         currentTurnPlayerId = -1;
         blackId = -1;
         whiteId = -1;
+        syncFlag = 4;
         RequestSerialization();
-        for(int i=0; i<64; i++)
-        {
-            gameObject.transform.GetChild(i).GetComponent<BoardBlockScript>().setStoneTextureGlobal();
-            gameObject.transform.GetChild(i).GetComponent<BoardBlockScript>().setInteractivenessFalseGlobal();
-        }
-        gameObject.transform.GetChild(64).GetComponent<StartButtonScript>().setActiveGlobal();
-        gameObject.transform.GetChild(65).GetComponent<StartButtonScript>().setActiveGlobal();
+        // for(int i=0; i<64; i++)
+        // {
+        //     gameObject.transform.GetChild(i).GetComponent<BoardBlockScript>().setStoneTextureGlobal();
+        //     gameObject.transform.GetChild(i).GetComponent<BoardBlockScript>().setInteractivenessFalseGlobal();
+        // }
+        // gameObject.transform.GetChild(64).GetComponent<StartButtonScript>().setActiveGlobal();
+        // gameObject.transform.GetChild(65).GetComponent<StartButtonScript>().setActiveGlobal();  
     }
 
     
@@ -392,5 +394,44 @@ public class BoardScript : UdonSharpBehaviour
             g2 = g2 & initializer;
             g2 = g2 | ((ulong)targetData << ((31-inner)*2));
         }
-    }    
+    }
+
+    public override void OnDeserialization()
+    {
+        switch (syncFlag)
+        {
+            case 1:
+            initializeGame();
+            break;
+            
+            case 2:
+            setTurn();
+            break;
+
+            case 3:
+            int[] spotsInfo = availableSpots();
+            int counter = 0;
+            for(int i=0; i<64; i++)
+            {
+                gameObject.transform.GetChild(i).GetComponent<BoardBlockScript>().setStoneTextureGlobal();
+                if(counter < spotsInfo[0] && i == spotsInfo[counter+1])
+                {
+                    gameObject.transform.GetChild(i).GetComponent<BoardBlockScript>().setInteractivenessGlobal();
+                    counter++;
+                }
+                else gameObject.transform.GetChild(i).GetComponent<BoardBlockScript>().setInteractivenessFalseGlobal();
+            }
+            break;
+
+            case 4:
+            for(int i=0; i<64; i++)
+            {
+                gameObject.transform.GetChild(i).GetComponent<BoardBlockScript>().setStoneTextureGlobal();
+                gameObject.transform.GetChild(i).GetComponent<BoardBlockScript>().setInteractivenessFalseGlobal();
+            }
+            gameObject.transform.GetChild(64).GetComponent<StartButtonScript>().setActiveGlobal();
+            gameObject.transform.GetChild(65).GetComponent<StartButtonScript>().setActiveGlobal();       
+            break;
+        }
+    }
 }

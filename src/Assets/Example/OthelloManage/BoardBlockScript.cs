@@ -6,7 +6,6 @@ using VRC.Udon;
 using VRC.Udon.Common;
 
 
-[UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
 public class BoardBlockScript : UdonSharpBehaviour
 {
     public Material[] materials;
@@ -33,6 +32,7 @@ public class BoardBlockScript : UdonSharpBehaviour
     public void setStoneTexture()
     {
         int flag = gameBoardBehaviour.getStatus(gameObject.transform.GetSiblingIndex());
+        // Debug.Log("[OUTPUT-SST] [" + Networking.LocalPlayer.playerId+"] "+ gameObject.transform.GetSiblingIndex() + " " + flag);
         if(flag == 0)
             rend.enabled = false;
         else

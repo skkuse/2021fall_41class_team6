@@ -5,7 +5,6 @@ using VRC.SDKBase;
 using VRC.Udon;
 
 
-[UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
 public class StartButtonScript : UdonSharpBehaviour
 {
     GameObject gameBoard;
@@ -13,7 +12,7 @@ public class StartButtonScript : UdonSharpBehaviour
 
     void Start()
     {
-        Debug.Log("[DORIKA_OUTPUT] Start Button Script initialize");
+        // Debug.Log("[DORIKA_OUTPUT] Start Button Script initialize");
         gameBoard = gameObject.transform.parent.gameObject;
         gameBoardBehaviour = gameBoard.GetComponent<BoardScript>();
     }
