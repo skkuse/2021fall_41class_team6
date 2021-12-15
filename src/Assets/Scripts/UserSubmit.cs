@@ -62,7 +62,7 @@ public class UserSubmit : UdonSharpBehaviour
             nameAnimator.SetTrigger("correct");
             emailAnimator.SetTrigger("correct");
 
-            if(Networking.IsMaster)
+            if (VRCPlayerApi.GetPlayerCount() == 1)
             {
                 database.SendCustomNetworkEvent(VRC.Udon.Common.Interfaces.NetworkEventTarget.All, "onSubmit");
             }
